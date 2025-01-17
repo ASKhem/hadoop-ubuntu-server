@@ -100,7 +100,6 @@ echo "Verificando servicios..."
 if ! check_services; then
     echo "❌ Error: No todos los servicios están funcionando correctamente"
     docker logs ${CONTAINER_NAME}
-    exit 1
 fi
 
 # Esperar a que el servicio SSH esté disponible
@@ -142,6 +141,8 @@ fi
 # Verificar que la clave se extrajo correctamente
 if [ ! -s id_rsa ]; then
     echo "❌ Error: La clave SSH está vacía"
+    echo "Verifica que el script extract_key.sh esté funcionando correctamente."
+    docker exec ${CONTAINER_NAME} cat /home/${HADOOP_USER}/.ssh/id_rsa  # Muestra la clave en los logs
     exit 1
 fi
 

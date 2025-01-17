@@ -228,6 +228,97 @@ export HADOOP_HEAPSIZE=4096
    - Mantener actualizados los certificados
    - Revisar logs de acceso
 
+## 🔐 Seguridad
+
+### Autenticación y Autorización
+
+#### SSH y Control de Acceso
+```bash
+# Generar nuevo par de claves SSH
+ssh-keygen -t rsa -b 4096 -f ~/.ssh/hadoop_rsa
+
+# Configurar permisos adecuados
+chmod 600 ~/.ssh/hadoop_rsa
+chmod 644 ~/.ssh/hadoop_rsa.pub
+```
+
+#### Kerberos (Opcional)
+```bash
+# Instalar Kerberos
+apt-get install krb5-kdc krb5-admin-server
+
+# Configurar principal
+kadmin.local -q "addprinc hadoop/hadoopuser@REALM"
+```
+
+### Cifrado y SSL/TLS
+
+#### Certificados
+```bash
+# Generar certificado SSL
+keytool -genkey -alias hadoop -keyalg RSA \
+  -keystore hadoop.keystore -keysize 2048
+```
+
+#### Configuración HTTPS
+```xml
+<!-- ssl-server.xml -->
+<property>
+  <name>ssl.server.keystore.location</name>
+  <value>/opt/hadoop/conf/hadoop.keystore</value>
+</property>
+```
+
+### Políticas de Seguridad
+
+#### ACLs en HDFS
+```bash
+# Configurar ACLs
+hdfs dfs -setfacl -m user:usuario:rw- /ruta/segura
+hdfs dfs -getfacl /ruta/segura
+```
+
+#### Firewall y Puertos
+```bash
+# Configurar iptables
+iptables -A INPUT -p tcp --dport 9000 -j ACCEPT  # HDFS
+iptables -A INPUT -p tcp --dport 8088 -j ACCEPT  # YARN
+iptables -P INPUT DROP  # Política por defecto
+```
+
+### Auditoría y Logging
+
+#### Logs de Seguridad
+```bash
+# Monitorear intentos de acceso
+tail -f /var/log/auth.log
+
+# Logs de auditoría HDFS
+tail -f /opt/hadoop/logs/SecurityLog.audit
+```
+
+#### Monitorización de Seguridad
+- 🔍 Detección de accesos no autorizados
+- 📊 Análisis de patrones de uso
+- 🚨 Alertas de seguridad configurables
+
+### Mejores Prácticas de Seguridad
+
+1. **Gestión de Credenciales**
+   - Rotación regular de claves SSH
+   - Almacenamiento seguro de contraseñas
+   - Uso de secretos cifrados
+
+2. **Hardening del Sistema**
+   - Actualizaciones de seguridad automáticas
+   - Principio de mínimo privilegio
+   - Aislamiento de contenedores
+
+3. **Cumplimiento y Políticas**
+   - Conformidad con GDPR/LOPD
+   - Políticas de retención de datos
+   - Procedimientos de respuesta a incidentes
+
 ## 🤝 Contribuir
 
 1. Fork el repositorio
@@ -242,6 +333,93 @@ export HADOOP_HEAPSIZE=4096
 - ✅ Actualizar documentación
 - ✅ Seguir estilo de código existente
 - ✅ Mantener compatibilidad hacia atrás
+
+## 🔧 Variables de Entorno
+
+| Variable | Descripción | Valor por Defecto |
+|----------|-------------|-------------------|
+| `HADOOP_HOME` | Directorio de instalación de Hadoop | `/opt/hadoop` |
+| `JAVA_HOME` | Directorio de instalación de Java | `/usr/lib/jvm/java-11` |
+| `FLUME_HOME` | Directorio de instalación de Flume | `/opt/flume` |
+| `HADOOP_CONF_DIR` | Directorio de configuración | `/opt/hadoop/etc/hadoop` |
+| `HADOOP_LOG_DIR` | Directorio de logs | `/opt/hadoop/logs` |
+
+## 🔗 Integración con Otras Herramientas
+
+### Apache Spark
+```bash
+# Configurar Spark con YARN
+export SPARK_HOME=/opt/spark
+export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
+spark-submit --master yarn ...
+```
+
+### Apache Hive
+```bash
+# Configurar Hive con HDFS
+export HIVE_HOME=/opt/hive
+hive --service metastore
+```
+
+### Kafka Connect
+```bash
+# Ejemplo de conector HDFS
+connect-standalone.sh connect-hdfs.properties
+```
+
+## 📊 Guía de Optimización
+
+### Configuración de Memoria
+```xml
+<!-- mapred-site.xml -->
+<property>
+  <name>mapreduce.map.memory.mb</name>
+  <value>2048</value>
+</property>
+```
+
+### Optimización de YARN
+```xml
+<!-- yarn-site.xml -->
+<property>
+  <name>yarn.nodemanager.resource.memory-mb</name>
+  <value>8192</value>
+</property>
+```
+
+## 📝 Ejemplos de Uso Común
+
+### MapReduce WordCount
+```bash
+# Compilar y ejecutar WordCount
+hadoop jar wc.jar WordCount /input /output
+```
+
+### Streaming de Datos con Flume
+```bash
+# Configurar agente Flume
+flume-ng agent -n agent1 -c conf -f conf/flume.conf
+```
+
+### Operaciones HDFS Básicas
+```bash
+# Operaciones comunes
+hdfs dfs -put localfile /hdfs/path
+hdfs dfs -get /hdfs/path localfile
+hdfs dfs -ls /
+```
+
+## 📅 Changelog
+
+### v1.0.0 (2024-03-15)
+- ✨ Lanzamiento inicial
+- 🔒 Implementación de seguridad básica
+- 📊 Configuración de monitoreo
+
+### v1.1.0 (2024-03-20)
+- 🚀 Mejoras en el rendimiento
+- 🔧 Corrección de bugs menores
+- 📝 Actualización de documentación
 
 ## 📝 Licencia
 
