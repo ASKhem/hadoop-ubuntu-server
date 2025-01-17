@@ -1,5 +1,5 @@
 # Stage 1: Download and prepare dependencies
-FROM ubuntu:22.04 as builder
+FROM ubuntu:22.04 AS builder
 
 # Build arguments
 ARG HADOOP_VERSION=3.3.6
@@ -67,6 +67,7 @@ RUN apt-get update && \
     net-tools \
     iputils-ping \
     curl \
+    lsb-release \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
