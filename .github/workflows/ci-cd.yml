@@ -86,6 +86,8 @@ jobs:
         push: true
         tags: |
           ${{ secrets.DOCKERHUB_USERNAME }}/askhadoop:latest
-          ${{ secrets.DOCKERHUB_USERNAME }}/askhadoop:${{ github.sha }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/askhadoop:3.3.6-ubuntu22.04
+          ${{ secrets.DOCKERHUB_USERNAME }}/askhadoop:3.3.6-ubuntu22.04-${{ github.run_number }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/askhadoop:${{ github.ref_name }}-$(date +%Y%m%d)
         cache-from: type=gha
         cache-to: type=gha,mode=max 
