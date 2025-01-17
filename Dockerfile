@@ -172,7 +172,9 @@ USER ${HADOOP_USER}
 WORKDIR /home/${HADOOP_USER}
 
 # Entrypoint
-ENTRYPOINT ["/entrypoint.sh"]# Create Flume logs directory
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Create Flume logs directory
 RUN mkdir -p /opt/flume/logs && \
     chown -R ${HADOOP_USER}:${HADOOP_GROUP} /opt/flume && \
     chmod -R 755 /opt/flume
